@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -36,7 +37,10 @@ public class RegisteredActivity extends AppCompatActivity {
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                Log.i(TAG, "Intent received: " + intent.getAction());
                 if (intent.getAction() != null && intent.getAction().equals("BadName")) {
+                    Log.i(TAG, "BroadcastReceiver detected bad name.");
+                    Toast.makeText(context, "Name not registered with MiFridge", Toast.LENGTH_LONG).show();
                     Intent reregisterIntent = new Intent(context, RegisterActivity.class);
                     reregisterIntent.putExtra("Reregister", "true");
                     startActivity(reregisterIntent);
@@ -48,7 +52,7 @@ public class RegisteredActivity extends AppCompatActivity {
                     boolean sentToken = sharedPreferences
                             .getBoolean("SentTokenToServer", false);
                     if (sentToken) {
-                        mInformationTextView.setText(getString(R.string.gcm_send_message));
+                        mInformationTextView.setText(getString(R.string.gcm_message_sent));
                     } else {
                         mInformationTextView.setText(getString(R.string.token_error_message));
                     }
@@ -71,6 +75,7 @@ public class RegisteredActivity extends AppCompatActivity {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter("RegistrationComplete"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver, new IntentFilter("BadName"));
     }
 
     @Override

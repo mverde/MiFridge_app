@@ -21,7 +21,7 @@ import okhttp3.Response;
  */
 public class RegistrationIntentService extends IntentService {
     private static final String TAG = "RegIntentService";
-    private final String SERVER_URL = "";
+    private final String SERVER_URL = "http://172.20.10.4:5000/mifridge/users";
     private final String SENT_TOKEN_TO_SERVER = "SentTokenToServer";
     private final String BAD_NAME = "BadName";
     private final String REGISTRATION_COMPLETE = "RegistrationComplete";
@@ -68,6 +68,7 @@ public class RegistrationIntentService extends IntentService {
         }
         // Notify UI that registration has completed, so the progress indicator can be hidden.
         if (!sharedPreferences.getBoolean(SENT_TOKEN_TO_SERVER, false) && !nameAuthenticated) {
+            Log.i(TAG, "Bad name.");
             Intent registrationComplete = new Intent(BAD_NAME);
             LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
         } else {
@@ -86,7 +87,7 @@ public class RegistrationIntentService extends IntentService {
      */
     private boolean sendRegistrationToServer(String name, String token) throws IOException {
         Log.i(TAG, "Making GET request with: " + name + " " + token);
-        String url = SERVER_URL;
+        String url = SERVER_URL + "/" + name + "/" + token;
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
@@ -94,6 +95,8 @@ public class RegistrationIntentService extends IntentService {
 
         Response response = client.newCall(request).execute();
         String responseStr = response.body().string();
-        return true;
+        Log.i(TAG, responseStr);
+
+        return response.code() == 200;
     }
 }

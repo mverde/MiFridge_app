@@ -11,6 +11,7 @@
         completions."
     </string>
     <string name="gcm_send_message">Generating ID...</string>
+    <string name="gcm_message_sent">Registered! :D</string>
     <string name="token_error_message">Failed to generate ID and send to server. Try again.</string>
     <string name="gcm_senderId">210066325606</string>
 </resources>
